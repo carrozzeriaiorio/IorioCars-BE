@@ -1,7 +1,7 @@
-package com.ioriocars.controller;
+package com.ioriocars.ioriocars.controller;
 
-import com.ioriocars.domain.User;
-import com.ioriocars.service.UserService;
+import com.ioriocars.ioriocars.domain.User;
+import com.ioriocars.ioriocars.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

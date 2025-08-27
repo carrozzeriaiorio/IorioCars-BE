@@ -1,6 +1,6 @@
-package com.ioriocars.repository;
+package com.ioriocars.ioriocars.repository;
 
-import com.ioriocars.domain.User;
+import com.ioriocars.ioriocars.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

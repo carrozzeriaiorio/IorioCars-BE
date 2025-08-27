@@ -1,4 +1,4 @@
-package com.ioriocars.domain;
+package com.ioriocars.ioriocars.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

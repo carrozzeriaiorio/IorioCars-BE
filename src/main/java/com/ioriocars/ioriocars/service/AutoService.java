@@ -1,8 +1,12 @@
-package com.ioriocars.service;
+package com.ioriocars.ioriocars.service;
 
-import com.ioriocars.domain.Auto;
-import com.ioriocars.repository.AutoRepository;
+import com.ioriocars.ioriocars.domain.Auto;
+import com.ioriocars.ioriocars.repository.AutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +17,21 @@ public class AutoService {
 
     @Autowired
     private AutoRepository autoRepository;
+
+    // Paginazione e filtri
+    public Page<Auto> findFiltered(String marca, String modello,
+                                   int annoMin, int annoMax,
+                                   double prezzoMin, double prezzoMax,
+                                   int kmMin, int kmMax,
+                                   String carburante,
+                                   int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+
+        return autoRepository.findByMarcaContainingIgnoreCaseAndModelloContainingIgnoreCaseAndAnnoBetweenAndPrezzoBetweenAndKmBetweenAndCarburanteContainingIgnoreCase(
+                marca, modello, annoMin, annoMax, prezzoMin, prezzoMax, kmMin, kmMax, carburante, pageable
+        );
+    }
 
     public List<Auto> getAll() {
         return autoRepository.findAll();

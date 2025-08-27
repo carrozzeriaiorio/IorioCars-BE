@@ -1,4 +1,4 @@
-package com.ioriocars;
+package com.ioriocars.ioriocars;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

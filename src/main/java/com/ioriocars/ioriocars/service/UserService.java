@@ -1,7 +1,7 @@
-package com.ioriocars.service;
+package com.ioriocars.ioriocars.service;
 
-import com.ioriocars.domain.User;
-import com.ioriocars.repository.UserRepository;
+import com.ioriocars.ioriocars.domain.User;
+import com.ioriocars.ioriocars.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
