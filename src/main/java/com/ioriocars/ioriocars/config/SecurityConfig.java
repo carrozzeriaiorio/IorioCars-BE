@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,17 +33,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // CSRF disabilitato in stile lambda
+            .csrf(csrf -> csrf.disable()) // disabilitato per API REST
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/api/auth/**", "/images/**").permitAll()
+                    // AUTO: chiunque può leggere
                     .requestMatchers(HttpMethod.GET, "/api/auto/**").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/auto/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.PUT, "/api/auto/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.DELETE, "/api/auto/**").hasRole("ADMIN")
-                    .anyRequest().authenticated()
+                    // AUTO: modifiche solo autenticati
+                    .requestMatchers("/api/auto/**").authenticated()
+                    // USERS: solo admin
+                    .requestMatchers("/api/users/**").hasRole("ADMIN")
+                    // Tutto il resto
+                    .anyRequest().permitAll()
             )
-            .httpBasic(httpBasic -> {
-            }); // Basic Auth
+            .httpBasic(Customizer.withDefaults()); // Basic Auth
         return http.build();
     }
 }
