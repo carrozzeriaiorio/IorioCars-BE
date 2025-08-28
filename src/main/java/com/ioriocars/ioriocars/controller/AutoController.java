@@ -1,5 +1,6 @@
 package com.ioriocars.ioriocars.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ioriocars.ioriocars.domain.Auto;
 import com.ioriocars.ioriocars.service.AutoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class AutoController {
     @Autowired
     private AutoService autoService;
 
-    private final Path uploadDir = Paths.get("uploads");
+    private final Path uploadDir = Paths.get("uploads/auto");
 
     public AutoController() throws IOException {
         if (!Files.exists(uploadDir)) {
@@ -60,27 +61,37 @@ public class AutoController {
     }
 
     @PostMapping
-    public Auto create(@RequestPart("auto") Auto auto,
-                       @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+    public Auto create(
+            @RequestParam("auto") String autoJson,
+            @RequestPart(value = "file", required = false) MultipartFile file
+    ) throws IOException {
+        Auto auto = new ObjectMapper().readValue(autoJson, Auto.class);
+
         if (file != null) {
             String filename = UUID.randomUUID() + "-" + file.getOriginalFilename();
             Path path = uploadDir.resolve(filename);
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
             auto.setImmagine(filename);
         }
+
         return autoService.create(auto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Auto> update(@PathVariable Long id,
-                                       @RequestPart("auto") Auto auto,
-                                       @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+    public ResponseEntity<Auto> update(
+            @PathVariable Long id,
+            @RequestParam("auto") String autoJson,
+            @RequestPart(value = "file", required = false) MultipartFile file
+    ) throws IOException {
+        Auto auto = new ObjectMapper().readValue(autoJson, Auto.class);
+
         if (file != null) {
             String filename = UUID.randomUUID() + "-" + file.getOriginalFilename();
             Path path = uploadDir.resolve(filename);
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
             auto.setImmagine(filename);
         }
+
         Auto updated = autoService.update(id, auto);
         if (updated == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
