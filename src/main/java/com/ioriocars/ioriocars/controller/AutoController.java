@@ -128,7 +128,23 @@ public class AutoController {
         if (existing.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+
+        Auto auto = existing.get();
+
+        // Rimuove l'immagine dal filesystem
+        if (auto.getImmagine() != null && !auto.getImmagine().isEmpty()) {
+            Path imagePath = Paths.get("uploads/auto").resolve(auto.getImmagine());
+            try {
+                Files.deleteIfExists(imagePath);
+            } catch (IOException e) {
+                // Logga l’errore ma non blocca la cancellazione
+                e.printStackTrace();
+            }
+        }
+
+        // Elimina l’auto dal DB
         autoService.delete(id);
+
         return ResponseEntity.noContent().build();
     }
 }
