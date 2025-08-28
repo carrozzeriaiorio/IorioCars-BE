@@ -14,7 +14,8 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")       // tutte le rotte API
-                        .allowedOrigins("http://localhost:4200") // Angular
+                        .allowedOrigins("http://localhost:4200",
+                                        "https://ioriocars-fe.onrender.com")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowCredentials(true);
             }
