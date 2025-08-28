@@ -41,7 +41,6 @@ public class Auto {
     @Size(max = 2000, message = "La descrizione non può superare i 1000 caratteri")
     private String descrizione;     // descrizione dettagliata
 
-    @Column(nullable = true)
     private String immagine;        // filename o URL dell'immagine
 }
 

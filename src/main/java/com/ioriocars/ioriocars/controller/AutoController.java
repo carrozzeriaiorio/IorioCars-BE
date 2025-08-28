@@ -18,6 +18,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auto")
+@CrossOrigin(origins = "http://localhost:4200")
 public class AutoController {
 
     @Autowired
@@ -62,16 +63,27 @@ public class AutoController {
 
     @PostMapping
     public Auto create(
-            @RequestParam("auto") String autoJson,
+            @RequestPart("auto") String autoJson,
             @RequestPart(value = "file", required = false) MultipartFile file
     ) throws IOException {
         Auto auto = new ObjectMapper().readValue(autoJson, Auto.class);
 
-        if (file != null) {
-            String filename = UUID.randomUUID() + "-" + file.getOriginalFilename();
-            Path path = uploadDir.resolve(filename);
+        if (file != null && !file.isEmpty()) {
+            if (!Files.exists(uploadDir)) {
+                Files.createDirectories(uploadDir);
+            }
+
+            // Nome originale del file (solo filename, senza path)
+            String originalFilename = Paths.get(file.getOriginalFilename()).getFileName().toString();
+
+            // Rimuove solo caratteri non validi per Windows
+            String safeFilename = originalFilename.replaceAll("[\\\\/:*?\"<>|]", "_");
+
+            Path path = uploadDir.resolve(safeFilename);
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-            auto.setImmagine(filename);
+
+            // Salva il nome originale “pulito” nel campo immagine
+            auto.setImmagine(safeFilename);
         }
 
         return autoService.create(auto);
@@ -80,16 +92,27 @@ public class AutoController {
     @PutMapping("/{id}")
     public ResponseEntity<Auto> update(
             @PathVariable Long id,
-            @RequestParam("auto") String autoJson,
+            @RequestPart("auto") String autoJson,
             @RequestPart(value = "file", required = false) MultipartFile file
     ) throws IOException {
         Auto auto = new ObjectMapper().readValue(autoJson, Auto.class);
 
-        if (file != null) {
-            String filename = UUID.randomUUID() + "-" + file.getOriginalFilename();
-            Path path = uploadDir.resolve(filename);
+        if (file != null && !file.isEmpty()) {
+            if (!Files.exists(uploadDir)) {
+                Files.createDirectories(uploadDir);
+            }
+
+            // Nome originale del file (solo filename, senza path)
+            String originalFilename = Paths.get(file.getOriginalFilename()).getFileName().toString();
+
+            // Rimuove solo caratteri non validi per Windows
+            String safeFilename = originalFilename.replaceAll("[\\\\/:*?\"<>|]", "_");
+
+            Path path = uploadDir.resolve(safeFilename);
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-            auto.setImmagine(filename);
+
+            // Salva il nome originale “pulito” nel campo immagine
+            auto.setImmagine(safeFilename);
         }
 
         Auto updated = autoService.update(id, auto);

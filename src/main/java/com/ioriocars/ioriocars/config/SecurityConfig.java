@@ -6,9 +6,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.cache.NullUserCache;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -31,20 +33,34 @@ public class SecurityConfig {
     }
 
     @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userService);
+        provider.setPasswordEncoder(passwordEncoder());
+        provider.setUserCache(new NullUserCache());
+        return provider;
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // disabilitato per API REST
-            .authorizeHttpRequests(auth -> auth
-                    // AUTO: chiunque può leggere
-                    .requestMatchers(HttpMethod.GET, "/api/auto/**").permitAll()
-                    // AUTO: modifiche solo autenticati
-                    .requestMatchers("/api/auto/**").authenticated()
-                    // USERS: solo admin
-                    .requestMatchers("/api/users/**").hasRole("ADMIN")
-                    // Tutto il resto
-                    .anyRequest().permitAll()
-            )
-            .httpBasic(Customizer.withDefaults()); // Basic Auth
+                .csrf(csrf -> csrf.disable()) // disabilitato per API REST
+                .cors(Customizer.withDefaults())
+                .authorizeHttpRequests(auth -> auth
+                        // permette le richieste OPTIONS per tutti (preflight)
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // AUTO: chiunque può leggere
+                        .requestMatchers(HttpMethod.GET, "/api/auto/**").permitAll()
+                        // AUTO: modifiche solo autenticati
+                        .requestMatchers("/api/auto/**").authenticated()
+                        // USERS: solo admin
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        // Tutto il resto
+                        .anyRequest().permitAll()
+                )
+                .httpBasic(Customizer.withDefaults()) // Basic Auth
+                .authenticationProvider(authenticationProvider());
+
         return http.build();
     }
 }
