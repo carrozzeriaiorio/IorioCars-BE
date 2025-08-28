@@ -2,6 +2,7 @@ package com.ioriocars.ioriocars.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "auto")
@@ -36,7 +37,8 @@ public class Auto {
     @Column(nullable = false)
     private String carburante;      // es. "Benzina", "Diesel", "Elettrica"
 
-    @Column(nullable = true)
+    @Column(nullable = true, length = 2000)
+    @Size(max = 2000, message = "La descrizione non può superare i 1000 caratteri")
     private String descrizione;     // descrizione dettagliata
 
     @Column(nullable = true)

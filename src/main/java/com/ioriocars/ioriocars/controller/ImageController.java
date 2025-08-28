@@ -12,7 +12,7 @@ import java.nio.file.*;
 @RequestMapping("/images")
 public class ImageController {
 
-    private final Path uploadDir = Paths.get("uploads");
+    private final Path uploadDir = Paths.get("uploads/auto");
 
     @GetMapping("/{filename:.+}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {
