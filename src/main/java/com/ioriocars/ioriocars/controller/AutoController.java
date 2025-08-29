@@ -89,10 +89,10 @@ public class AutoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        // Rimuove immagine da R2 se richiesto
-        if (removeImage && existing.getImmagine() != null) {
+        // Se c'è un nuovo file o removeImage=true, cancella la vecchia immagine
+        if ((file != null && !file.isEmpty() || removeImage) && existing.getImmagine() != null) {
             r2StorageService.deleteFile(existing.getImmagine());
-            auto.setImmagine(null);
+            auto.setImmagine(null); // reset
         }
 
         if (file != null && !file.isEmpty()) {
