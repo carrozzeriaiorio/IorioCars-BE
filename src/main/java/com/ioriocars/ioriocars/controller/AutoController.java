@@ -79,9 +79,21 @@ public class AutoController {
     public ResponseEntity<Auto> update(
             @PathVariable Long id,
             @RequestPart("auto") String autoJson,
-            @RequestPart(value = "file", required = false) MultipartFile file
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "removeImage", defaultValue = "false") boolean removeImage
     ) throws IOException {
         Auto auto = new ObjectMapper().readValue(autoJson, Auto.class);
+
+        Auto existing = autoService.getById(id).orElse(null);
+        if (existing == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        // Rimuove immagine da R2 se richiesto
+        if (removeImage && existing.getImmagine() != null) {
+            r2StorageService.deleteFile(existing.getImmagine());
+            auto.setImmagine(null);
+        }
 
         if (file != null && !file.isEmpty()) {
             // upload su R2
@@ -92,9 +104,6 @@ public class AutoController {
         }
 
         Auto updated = autoService.update(id, auto);
-        if (updated == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
         return ResponseEntity.ok(updated);
     }
 

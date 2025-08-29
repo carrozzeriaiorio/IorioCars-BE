@@ -1,22 +1,26 @@
 package com.ioriocars.ioriocars.controller;
 
+import com.ioriocars.ioriocars.domain.Auto;
+import com.ioriocars.ioriocars.service.AutoService;
 import com.ioriocars.ioriocars.service.R2StorageService;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.MalformedURLException;
 import java.nio.file.*;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/images")
+@CrossOrigin(origins = {"http://localhost:4200", "https://ioriocars-fe.onrender.com"})
 public class ImageController {
 
-    private final Path uploadDir = Paths.get("uploads/auto");
-
     private final R2StorageService r2StorageService;
+    private final AutoService autoService;
 
-    public ImageController(R2StorageService r2StorageService) {
+    public ImageController(R2StorageService r2StorageService, AutoService autoService) {
         this.r2StorageService = r2StorageService;
+        this.autoService = autoService;
     }
 
     @GetMapping("/{filename:.+}")
