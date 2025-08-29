@@ -80,7 +80,7 @@ public class AutoController {
             @PathVariable Long id,
             @RequestPart("auto") String autoJson,
             @RequestPart(value = "file", required = false) MultipartFile file,
-            @RequestParam(value = "removeImage", defaultValue = "false") boolean removeImage
+            @RequestPart(value = "removeImage", required = false) boolean removeImage
     ) throws IOException {
         Auto auto = new ObjectMapper().readValue(autoJson, Auto.class);
 
@@ -90,7 +90,7 @@ public class AutoController {
         }
 
         // Se c'è un nuovo file o removeImage=true, cancella la vecchia immagine
-        if (removeImage){
+        if (removeImage && existing.getImmagine() != null){
             System.out.println("Existing image from remove image: " + existing.getImmagine());
             r2StorageService.deleteFile(existing.getImmagine());
             auto.setImmagine(null); // reset
