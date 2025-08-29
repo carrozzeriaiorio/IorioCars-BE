@@ -3,6 +3,7 @@ package com.ioriocars.ioriocars.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ioriocars.ioriocars.domain.Auto;
 import com.ioriocars.ioriocars.service.AutoService;
+import com.ioriocars.ioriocars.service.R2StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -18,19 +19,14 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auto")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200", "https://ioriocars-fe.onrender.com"})
 public class AutoController {
 
     @Autowired
     private AutoService autoService;
 
-    private final Path uploadDir = Paths.get("uploads/auto");
-
-    public AutoController() throws IOException {
-        if (!Files.exists(uploadDir)) {
-            Files.createDirectories(uploadDir);
-        }
-    }
+    @Autowired
+    private R2StorageService r2StorageService;
 
     @GetMapping("/filter")
     public Page<Auto> getFiltered(
@@ -69,21 +65,11 @@ public class AutoController {
         Auto auto = new ObjectMapper().readValue(autoJson, Auto.class);
 
         if (file != null && !file.isEmpty()) {
-            if (!Files.exists(uploadDir)) {
-                Files.createDirectories(uploadDir);
-            }
+            // upload su R2
+            String key = r2StorageService.uploadFile(file);
 
-            // Nome originale del file (solo filename, senza path)
-            String originalFilename = Paths.get(file.getOriginalFilename()).getFileName().toString();
-
-            // Rimuove solo caratteri non validi per Windows
-            String safeFilename = originalFilename.replaceAll("[\\\\/:*?\"<>|]", "_");
-
-            Path path = uploadDir.resolve(safeFilename);
-            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-
-            // Salva il nome originale “pulito” nel campo immagine
-            auto.setImmagine(safeFilename);
+            // salvo solo la chiave nel DB
+            auto.setImmagine(key);
         }
 
         return autoService.create(auto);
@@ -98,21 +84,11 @@ public class AutoController {
         Auto auto = new ObjectMapper().readValue(autoJson, Auto.class);
 
         if (file != null && !file.isEmpty()) {
-            if (!Files.exists(uploadDir)) {
-                Files.createDirectories(uploadDir);
-            }
+            // upload su R2
+            String key = r2StorageService.uploadFile(file);
 
-            // Nome originale del file (solo filename, senza path)
-            String originalFilename = Paths.get(file.getOriginalFilename()).getFileName().toString();
-
-            // Rimuove solo caratteri non validi per Windows
-            String safeFilename = originalFilename.replaceAll("[\\\\/:*?\"<>|]", "_");
-
-            Path path = uploadDir.resolve(safeFilename);
-            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-
-            // Salva il nome originale “pulito” nel campo immagine
-            auto.setImmagine(safeFilename);
+            // salvo solo la chiave nel DB
+            auto.setImmagine(key);
         }
 
         Auto updated = autoService.update(id, auto);
@@ -133,13 +109,7 @@ public class AutoController {
 
         // Rimuove l'immagine dal filesystem
         if (auto.getImmagine() != null && !auto.getImmagine().isEmpty()) {
-            Path imagePath = Paths.get("uploads/auto").resolve(auto.getImmagine());
-            try {
-                Files.deleteIfExists(imagePath);
-            } catch (IOException e) {
-                // Logga l’errore ma non blocca la cancellazione
-                e.printStackTrace();
-            }
+            r2StorageService.deleteFile(auto.getImmagine());
         }
 
         // Elimina l’auto dal DB
