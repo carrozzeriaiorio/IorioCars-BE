@@ -57,7 +57,9 @@ public class SecurityConfig {
                         // AUTO: chiunque può leggere
                         .requestMatchers(HttpMethod.GET, "/api/auto/**").permitAll()
                         // AUTO: modifiche solo autenticati
-                        .requestMatchers("/api/auto/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/auto/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/auto/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/auto/**").authenticated()
                         // USERS: solo admin
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
                         // Tutto il resto
