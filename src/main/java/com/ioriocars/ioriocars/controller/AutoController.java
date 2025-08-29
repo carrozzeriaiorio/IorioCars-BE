@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ioriocars.ioriocars.domain.Auto;
 import com.ioriocars.ioriocars.service.AutoService;
 import com.ioriocars.ioriocars.service.R2StorageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,8 @@ public class AutoController {
 
     @Autowired
     private R2StorageService r2StorageService;
+
+    private static final Logger log = LoggerFactory.getLogger(AutoController.class);
 
     @GetMapping("/filter")
     public Page<Auto> getFiltered(
@@ -81,15 +85,25 @@ public class AutoController {
             @RequestPart("auto") String autoJson,
             @RequestPart(value = "file", required = false) MultipartFile file
     ) throws IOException {
-        Auto auto = new ObjectMapper().readValue(autoJson, Auto.class);
+        Auto autoFromClient = new ObjectMapper().readValue(autoJson, Auto.class);
 
         Auto existing = autoService.getById(id).orElse(null);
         if (existing == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
+        // 🔄 copia i campi aggiornabili
+        existing.setTitolo(autoFromClient.getTitolo());
+        existing.setMarca(autoFromClient.getMarca());
+        existing.setModello(autoFromClient.getModello());
+        existing.setAnno(autoFromClient.getAnno());
+        existing.setPrezzo(autoFromClient.getPrezzo());
+        existing.setKm(autoFromClient.getKm());
+        existing.setCarburante(autoFromClient.getCarburante());
+        existing.setDescrizione(autoFromClient.getDescrizione());
+
         if (file != null && !file.isEmpty()) {
-            System.out.println("Existing image: " + existing.getImmagine());
+            log.info("Existing image: " + existing.getImmagine());
             if(existing.getImmagine() != null){
                 r2StorageService.deleteFile(existing.getImmagine());
             }
@@ -97,10 +111,10 @@ public class AutoController {
             String key = r2StorageService.uploadFile(file);
 
             // salvo solo la chiave nel DB
-            auto.setImmagine(key);
+            existing.setImmagine(key);
         }
 
-        Auto updated = autoService.update(id, auto);
+        Auto updated = autoService.update(id, existing);
         return ResponseEntity.ok(updated);
     }
 
