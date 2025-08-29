@@ -16,7 +16,8 @@ public class WebConfig {
                 registry.addMapping("/api/**")       // tutte le rotte API
                         .allowedOrigins("http://localhost:4200",
                                         "https://ioriocars-fe.onrender.com",
-                                        "https://www.ioriocars.it")
+                                        "https://www.ioriocars.it",
+                                        "https://ioriocars.it")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowCredentials(true);
             }
