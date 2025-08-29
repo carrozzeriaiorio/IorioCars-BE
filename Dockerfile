@@ -10,6 +10,9 @@ RUN mkdir -p uploads/auto
 # Copia il jar buildato
 COPY target/ioriocars-0.0.1-SNAPSHOT.jar app.jar
 
+# Copia il file application.properties
+COPY src/main/resources/application.properties src/main/resources/application.properties
+
 # Espone la porta 8080
 EXPOSE 8080
 

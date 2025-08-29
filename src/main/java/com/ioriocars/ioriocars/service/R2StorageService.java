@@ -23,7 +23,7 @@ public class R2StorageService {
     private final S3Client s3Client;
     private final String bucketName;
 
-    public R2StorageService(S3Client s3Client, String bucketName) {
+    public R2StorageService(S3Client s3Client, @Value("${cloudflare.bucket}") String bucketName) {
         this.s3Client = s3Client;
         this.bucketName = bucketName;
     }
