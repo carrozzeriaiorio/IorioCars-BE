@@ -21,7 +21,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auto")
-@CrossOrigin(origins = {"http://localhost:4200", "https://ioriocars-fe.onrender.com"})
+@CrossOrigin(origins = {"http://localhost:4200", "https://ioriocars-fe.onrender.com", "https://www.ioriocars.it"})
 public class AutoController {
 
     @Autowired
