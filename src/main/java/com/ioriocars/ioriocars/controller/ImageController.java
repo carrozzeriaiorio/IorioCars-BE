@@ -1,7 +1,6 @@
 package com.ioriocars.ioriocars.controller;
 
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
+import com.ioriocars.ioriocars.service.R2StorageService;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,27 +13,25 @@ public class ImageController {
 
     private final Path uploadDir = Paths.get("uploads/auto");
 
+    private final R2StorageService r2StorageService;
+
+    public ImageController(R2StorageService r2StorageService) {
+        this.r2StorageService = r2StorageService;
+    }
+
     @GetMapping("/{filename:.+}")
-    public ResponseEntity<Resource> getImage(@PathVariable String filename) {
+    public ResponseEntity<byte[]> getImage(@PathVariable String filename) {
         try {
-            Path file = uploadDir.resolve(filename).normalize();
-            Resource resource = new UrlResource(file.toUri());
+            byte[] data = r2StorageService.downloadFile(filename);
 
-            if (!resource.exists()) {
-                return ResponseEntity.notFound().build();
-            }
+            String contentType = "application/octet-stream";
 
-            String contentType = Files.probeContentType(file);
-            if (contentType == null) {
-                contentType = "application/octet-stream";
-            }
-
+            // Restituisce il file con intestazione per download inline
             return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
                     .contentType(MediaType.parseMediaType(contentType))
-                    .body(resource);
+                    .body(data);
 
-        } catch (MalformedURLException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
