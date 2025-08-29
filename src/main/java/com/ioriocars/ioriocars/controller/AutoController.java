@@ -30,8 +30,6 @@ public class AutoController {
     @Autowired
     private R2StorageService r2StorageService;
 
-    private static final Logger log = LoggerFactory.getLogger(AutoController.class);
-
     @GetMapping("/filter")
     public Page<Auto> getFiltered(
             @RequestParam(defaultValue = "") String marca,
@@ -103,7 +101,6 @@ public class AutoController {
         existing.setDescrizione(autoFromClient.getDescrizione());
 
         if (file != null && !file.isEmpty()) {
-            log.info("Existing image: " + existing.getImmagine());
             if(existing.getImmagine() != null){
                 r2StorageService.deleteFile(existing.getImmagine());
             }
