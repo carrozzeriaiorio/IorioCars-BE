@@ -52,7 +52,6 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // disabilitato per API REST
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**").hasRole("ADMIN")
                         .requestMatchers("/health").permitAll()
                         // permette le richieste OPTIONS per tutti (preflight)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
