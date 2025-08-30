@@ -54,6 +54,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // permette le richieste OPTIONS per tutti (preflight)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // AUTH: login pubblici
+                        .requestMatchers("/api/auth/**").permitAll()
                         // AUTO: chiunque può leggere
                         .requestMatchers(HttpMethod.GET, "/api/auto/**").permitAll()
                         // AUTO: modifiche solo autenticati
