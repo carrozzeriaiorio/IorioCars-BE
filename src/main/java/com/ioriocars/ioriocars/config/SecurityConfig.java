@@ -52,6 +52,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // disabilitato per API REST
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/h2-console/**").hasRole("ADMIN")
+                        .requestMatchers("/health").permitAll()
                         // permette le richieste OPTIONS per tutti (preflight)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // AUTH: login pubblici
@@ -68,7 +70,8 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
                 )
                 .httpBasic(Customizer.withDefaults()) // Basic Auth
-                .authenticationProvider(authenticationProvider());
+                .authenticationProvider(authenticationProvider())
+                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
         return http.build();
     }

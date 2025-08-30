@@ -27,7 +27,7 @@ public class DataInitializer {
                         .build();
                 userRepository.save(admin);
             }
-
+            /*
             // ----------- CREAZIONE AUTO DI ESEMPIO -----------
             if (autoRepository.findAll().isEmpty()) {
                 Auto auto1 = Auto.builder()
@@ -55,7 +55,11 @@ public class DataInitializer {
                         .build();
 
                 autoRepository.saveAll(List.of(auto1, auto2));
+
+
             }
+            */
+
         };
     }
 }
