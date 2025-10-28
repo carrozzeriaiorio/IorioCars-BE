@@ -2,7 +2,7 @@ name: Keep Backend Alive
 
 on:
   schedule:
-    - cron: "*/5 * * * *"   # Ping ogni 5 minuti
+    - cron: "*/10 * * * *"   # Ping ogni 5 minuti
   workflow_dispatch:         # Avvio manuale
 
 jobs:
