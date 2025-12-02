@@ -19,6 +19,7 @@ public class DataInitializer {
         return args -> {
 
             // ----------- CREAZIONE ADMIN DI DEFAULT -----------
+            /*
             if (userRepository.findAll().isEmpty()) {
                 User admin = User.builder()
                         .email("carrozzeriaiorio@gmail.com")
@@ -27,6 +28,8 @@ public class DataInitializer {
                         .build();
                 userRepository.save(admin);
             }
+            */
+
             /*
             // ----------- CREAZIONE AUTO DI ESEMPIO -----------
             if (autoRepository.findAll().isEmpty()) {
